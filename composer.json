@@ -1,0 +1,26 @@
+{
+    "name": "bentools/simplexmlextended",
+    "type": "library",
+    "description": "Some extra functions to work with SimpleXml.",
+    "keywords": ["xml", "simplexml", "simple xml", "simplexmlelement", "simple xml element"],
+    "homepage": "https://github.com/bpolaszek/bentools-simplexmlextended",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Beno!t POLASZEK",
+            "role": "Developer"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/bpolaszek/bentools-simplexmlextended"
+        }
+    ],
+    "require": {
+        "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {"BenTools\\": "src/BenTools"}
+    }
+}
