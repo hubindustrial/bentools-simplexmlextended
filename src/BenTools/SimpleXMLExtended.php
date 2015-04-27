@@ -151,6 +151,17 @@ class SimpleXMLExtended extends SimpleXMLElement {
     }
 
     /**
+     * Removes an attribute
+     * @param $name
+     * @return $this
+     */
+    public function removeAttribute($name) {
+        $node   =   dom_import_simplexml($this);
+        $node   ->  removeAttribute($name);
+        return $this;
+    }
+
+    /**
      * Appends a SimpleXmlExtended element
      *
      * @param SimpleXmlElement $child
