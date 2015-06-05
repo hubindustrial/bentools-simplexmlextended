@@ -27,6 +27,7 @@
 
 namespace BenTools;
 
+use DOMDocument;
 use DOMNode;
 use SimpleXMLElement;
 
@@ -253,33 +254,33 @@ class SimpleXMLExtended extends SimpleXMLElement {
      */
     public function addChildFromArray(array $array = []) {
 
-            foreach ($array AS $key => $value) {
+        foreach ($array AS $key => $value) {
 
-                # An XML node can't be numeric : if so, let's take the current node name
-                if (is_numeric($key))
-                    $_key = $this->getName();
+            # An XML node can't be numeric : if so, let's take the current node name
+            if (is_numeric($key))
+                $_key = $this->getName();
 
-                # If it's an associative array, take the key as the node name
-                else
-                    $_key = $key;
+            # If it's an associative array, take the key as the node name
+            else
+                $_key = $key;
 
-                # Numeric values
-                if (is_numeric($value))
-                    $this->addChild($_key, $value);
+            # Numeric values
+            if (is_numeric($value))
+                $this->addChild($_key, $value);
 
-                # Boolean values => change them to strings
-                elseif (is_bool($value))
-                    $this->addChild($_key, (($value) ? 'true' : 'false'));
+            # Boolean values => change them to strings
+            elseif (is_bool($value))
+                $this->addChild($_key, (($value) ? 'true' : 'false'));
 
-                # String values (or objects castable as strings)
-                elseif (is_string($value) || (is_object($value) && in_array('__toString', get_class_methods($value))))
-                    $this->addCdataChild($_key, (string) $value);
+            # String values (or objects castable as strings)
+            elseif (is_string($value) || (is_object($value) && in_array('__toString', get_class_methods($value))))
+                $this->addCdataChild($_key, (string) $value);
 
-                # Array values (or objects not castable as strings => casted as arrays)
-                elseif (is_array($value) || (is_object($value) && !in_array('__toString', get_class_methods($value)) && $value = (array) $value))
-                    $this->addChild($_key)->addChildFromArray($value);
+            # Array values (or objects not castable as strings => casted as arrays)
+            elseif (is_array($value) || (is_object($value) && !in_array('__toString', get_class_methods($value)) && $value = (array) $value))
+                $this->addChild($_key)->addChildFromArray($value);
 
-            }
+        }
 
         return $this;
     }
@@ -294,6 +295,53 @@ class SimpleXMLExtended extends SimpleXMLElement {
         if (is_null($simpleXMLElement))
             $simpleXMLElement = new static("<Array></Array>");
         return $simpleXMLElement->addChildFromArray($array);
+    }
+
+    /**
+     * SaveXML() override, with an optionnal parameter allowing to indent output.
+     * Can also be called with $xml->saveXml(true) to directly return an indented output
+     * @param null $filename
+     * @param bool $formatOutput
+     * @return bool|int|mixed|string
+     */
+    public function asXML($filename = null, $formatOutput = false) {
+
+        if (func_num_args() === 1 && func_get_arg(0) === true) {
+            $formatOutput = true;
+            $filename = null;
+        }
+
+        if (!$formatOutput)
+            return $filename ? parent::asXML($filename) : parent::asXML();
+
+        else
+            return $filename ? file_put_contents($filename, $this->getIndentedOutput()) : $this->getIndentedOutput();
+
+    }
+
+    /**
+     * SaveXML() alias.
+     * @param null $filename
+     * @param bool $formatOutput
+     * @return bool|int|mixed|string
+     */
+    public function saveXML($filename = null, $formatOutput = false) {
+        if (func_num_args() === 1 && func_get_arg(0) === true) {
+            $formatOutput = true;
+            $filename = null;
+        }
+        return $this->asXML($filename, $formatOutput);
+    }
+
+    /**
+     * @return string
+     */
+    protected function getIndentedOutput() {
+        $dom = new DOMDocument('1.0');
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($this->saveXML());
+        return $dom->saveXML();
     }
 
 }
