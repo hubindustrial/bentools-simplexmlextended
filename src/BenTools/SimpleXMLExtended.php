@@ -243,7 +243,7 @@ class SimpleXMLExtended extends SimpleXMLElement {
         $node2 = dom_import_simplexml($node2);
         if (!$node1->ownerDocument->isSameNode($node2->ownerDocument))
             $node2 = $node1->ownerDocument->importNode($node2, true);
-        return [$node1, $node2];
+        return array($node1, $node2);
     }
 
     /**
@@ -252,7 +252,7 @@ class SimpleXMLExtended extends SimpleXMLElement {
      * @param array $array
      * @return $this - Provides fluent interface
      */
-    public function addChildFromArray(array $array = []) {
+    public function addChildFromArray(array $array = array()) {
 
         foreach ($array AS $key => $value) {
 
